@@ -9,13 +9,12 @@ public class FilmeController : ControllerBase
     private static List<Filme> filmes = new();
     private static int id = 0;
     [HttpPost]
-    public void AdicionaFilme([FromBody] Filme filme)
+    public IActionResult AdicionaFilme([FromBody] Filme filme)
     {
         filme.Id = id++;
         filmes.Add(filme);
-        Console.WriteLine(filme.Titulo);
-        Console.WriteLine(filme.Duracao);
-        Console.WriteLine(filme.Genero);
+        return CreatedAtAction(nameof(VerificarFilmeID), new {id = filme.Id},filme);
+        
     }
 
     [HttpGet]
