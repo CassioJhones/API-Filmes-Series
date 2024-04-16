@@ -1,4 +1,11 @@
+using FilmesAPI.BancoDados;
+using Microsoft.EntityFrameworkCore;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+string? stringConexao = builder.Configuration.GetConnectionString("FilmeConnection");
+builder.Services.AddDbContext<FilmeContext>
+    (config => config.UseMySql(stringConexao, ServerVersion.AutoDetect(stringConexao)));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
