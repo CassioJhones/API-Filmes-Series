@@ -2,6 +2,7 @@
 using FilmesAPI.BancoDados;
 using FilmesAPI.BancoDados.DTO;
 using FilmesAPI.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 namespace FilmesAPI.Controllers;
 
@@ -37,12 +38,31 @@ public class FilmeController : ControllerBase
         return filme is null ? NotFound("ID NAO ENCONTRADO") : Ok(filme);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}")]//PUT atualiza obj/json inteiro
     public IActionResult AtualizaFilme(int id, [FromBody] UpdateFilmeDTO filmeDTO)
     {
-        Filme? filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
+        Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
         _mapper.Map(filmeDTO, filme);
+        _context.SaveChanges();
+        return NoContent();
+    }
+
+    [HttpPatch("{id}")]//PATCH atualiza parte do obj/json
+    public IActionResult AtualizaFilmeParcial(int id, JsonPatchDocument<UpdateFilmeDTO> atParcial)
+    {
+        Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
+        if (filme is null) return NotFound("ID NAO ENCONTRADO");
+
+        UpdateFilmeDTO filmeAtualizado = _mapper.Map<UpdateFilmeDTO>(filme);
+
+        atParcial.ApplyTo(filmeAtualizado,ModelState);
+
+
+        if (!TryValidateModel(filmeAtualizado))
+            return ValidationProblem(ModelState);
+
+        _mapper.Map(filmeAtualizado, filme);
         _context.SaveChanges();
         return NoContent();
     }

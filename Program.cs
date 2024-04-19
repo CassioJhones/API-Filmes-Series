@@ -1,6 +1,5 @@
 using FilmesAPI.BancoDados;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +8,7 @@ builder.Services.AddDbContext<FilmeContext>
     (config => config.UseMySql(stringConexao, ServerVersion.AutoDetect(stringConexao)));
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 WebApplication app = builder.Build();
