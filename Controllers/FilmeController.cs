@@ -38,22 +38,45 @@ public class FilmeController : ControllerBase
         return CreatedAtAction(nameof(VerificarFilmeID), new { id = filme.Id }, filme);
     }
 
+    /// <summary>
+    /// Busca todos os filmes salvos no Banco de Dados
+    /// </summary>
+    /// <param name="skip">Quantidade de filmes para pular</param>
+    /// <param name="take">Quantidade de filmes para exibir</param>
+    /// <returns>Uma lista de filmes.</returns>
+    /// <response code="200">Lista de filmes retornada com sucesso.</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public IEnumerable<ReadFilmeDTO> VerificarFilmes([FromQuery] int skip = 0, [FromQuery] int take = 20)
     {
         return _mapper.Map<List<ReadFilmeDTO>>(_context.Filmes.Skip(skip).Take(take));
     }
 
+    /// <summary>
+    /// Verifica um filme pelo Id
+    /// </summary>
+    /// <param name="id">Id do filme desejado</param>
+    /// <returns>IActionResult</returns>
+    /// <response code="404">O Filme buscado não existe no Banco de Dados</response>
+    /// <response code="200">O Filme buscado foi encontrado</response>
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult VerificarFilmeID(int id)
     {
         Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
-        
-        var filmeDto = _mapper.Map<ReadFilmeDTO>(filme);
+
+        ReadFilmeDTO filmeDto = _mapper.Map<ReadFilmeDTO>(filme);
             return Ok(filme);
     }
 
+    /// <summary>
+    /// Altera TODOS os dados de um filme
+    /// </summary>
+    /// <param name="id">id do filme</param>
+    /// <param name="filmeDTO">Dados do filme a serem atualizados.</param>
+    /// <returns>IActionResult</returns>
     [HttpPut("{id}")]//PUT atualiza obj/json inteiro
     public IActionResult AtualizaFilme(int id, [FromBody] UpdateFilmeDTO filmeDTO)
     {
@@ -64,6 +87,12 @@ public class FilmeController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Altera os dados de um filme de modo PARCIAL
+    /// </summary>
+    /// <param name="id">Id do Filme</param>
+    /// <param name="atParcial">Informação que deseja alterar</param>
+    /// <returns>IActionResult</returns>
     [HttpPatch("{id}")]//PATCH atualiza parte do obj/json
     public IActionResult AtualizaFilmeParcial(int id, JsonPatchDocument<UpdateFilmeDTO> atParcial)
     {
@@ -83,7 +112,16 @@ public class FilmeController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Apaga o filme do banco de dados
+    /// </summary>
+    /// <param name="id">Id do filme desejado</param>
+    /// <returns>IActionResult</returns>
+    /// <response code="404">O Filme buscado não existe no Banco de Dados</response>
+    /// <response code="200">O Filme buscado foi Apagado</response>
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult DeletarFime(int id)
     {
         Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
@@ -93,6 +131,5 @@ public class FilmeController : ControllerBase
         _context.SaveChanges();
         return Ok($"Filme Deletado: {id} - {filme.Titulo}");
     }
-
 
 }
