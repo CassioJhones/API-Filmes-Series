@@ -25,6 +25,7 @@ public class ReadFilmeDTO
     /// Define a Hora da Consulta do filme
     /// </summary>
     public string HoraConsulta { get; set; }
+    public string AdicionadoEm { get; set; }
 
     public ReadFilmeDTO()
     {

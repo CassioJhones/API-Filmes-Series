@@ -18,4 +18,10 @@ public class Filme
     [Required(ErrorMessage = "Duracao é obrigatória")]
     [Range(90, 220, ErrorMessage = "Duracao deve ser entre 90 e 220 min")]
     public int Duracao { get; set; }
+    public string? AdicionadoEm{ get; set; }
+
+    public Filme()
+    {
+        AdicionadoEm = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+    }
 }
