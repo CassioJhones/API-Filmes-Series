@@ -11,11 +11,11 @@ namespace FilmesAPI.Controllers;
 [Route("[controller]")]
 public class FilmeController : ControllerBase
 {
-    private FilmeContext _context;
+    private FilmeContext _BancoDados;
     private IMapper _mapper;
     public FilmeController(FilmeContext context, IMapper mapper)
     {
-        _context = context;
+        _BancoDados = context;
         _mapper = mapper;
     }
 
@@ -33,8 +33,8 @@ public class FilmeController : ControllerBase
     {
         Filme filme = _mapper.Map<Filme>(filmeDTO);
 
-        _context.Filmes.Add(filme);
-        _context.SaveChanges();
+        _BancoDados.Filmes.Add(filme);
+        _BancoDados.SaveChanges();
         return CreatedAtAction(nameof(VerificarFilmeID), new { id = filme.Id }, filme);
     }
 
@@ -43,13 +43,22 @@ public class FilmeController : ControllerBase
     /// </summary>
     /// <param name="skip">Quantidade de filmes para pular</param>
     /// <param name="take">Quantidade de filmes para exibir</param>
+    /// <param name="genero">Genero do filme buscado</param>
     /// <returns>Uma lista de filmes.</returns>
     /// <response code="200">Lista de filmes retornada com sucesso.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public IEnumerable<ReadFilmeDTO> VerificarFilmes([FromQuery] int skip = 0, [FromQuery] int take = 20)
+    public IEnumerable<ReadFilmeDTO> VerificarFilmes
+        ([FromQuery] int skip = 0, [FromQuery] int take = 20, [FromQuery] string genero = null)
     {
-        return _mapper.Map<List<ReadFilmeDTO>>(_context.Filmes.Skip(skip).Take(take));
+
+        IQueryable<Filme> query = _BancoDados.Filmes;
+
+        if (!string.IsNullOrEmpty(genero))
+            query = query.Where(x => x.Genero == genero);
+
+        query = query.Skip(skip).Take(take);
+        return _mapper.Map<List<ReadFilmeDTO>>(query.ToList());
     }
 
     /// <summary>
@@ -64,7 +73,7 @@ public class FilmeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult VerificarFilmeID(int id)
     {
-        Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
+        Filme? filme = _BancoDados.Filmes.FirstOrDefault(x => x.Id == id);
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
 
         ReadFilmeDTO filmeDto = _mapper.Map<ReadFilmeDTO>(filme);
@@ -80,10 +89,10 @@ public class FilmeController : ControllerBase
     [HttpPut("{id}")]//PUT atualiza obj/json inteiro
     public IActionResult AtualizaFilme(int id, [FromBody] UpdateFilmeDTO filmeDTO)
     {
-        Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
+        Filme? filme = _BancoDados.Filmes.FirstOrDefault(x => x.Id == id);
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
         _mapper.Map(filmeDTO, filme);
-        _context.SaveChanges();
+        _BancoDados.SaveChanges();
         return NoContent();
     }
 
@@ -98,7 +107,7 @@ public class FilmeController : ControllerBase
     {
         string campo = mudanca.Operations[0].path.Replace("/", "").Trim().ToUpper();
         object valor = mudanca.Operations[0].value;
-        Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
+        Filme? filme = _BancoDados.Filmes.FirstOrDefault(x => x.Id == id);
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
 
         PropertyInfo[] propriedadesObj = filme.GetType().GetProperties();
@@ -120,7 +129,7 @@ public class FilmeController : ControllerBase
             return ValidationProblem(ModelState);
 
         _mapper.Map(filmeAtualizado, filme);
-        _context.SaveChanges();
+        _BancoDados.SaveChanges();
         return Ok($"Alteracao Realizada do campo {campo} para {valor}");
     }
 
@@ -136,11 +145,11 @@ public class FilmeController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult DeletarFime(int id)
     {
-        Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
+        Filme? filme = _BancoDados.Filmes.FirstOrDefault(x => x.Id == id);
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
 
-        _context.Remove(filme);
-        _context.SaveChanges();
+        _BancoDados.Remove(filme);
+        _BancoDados.SaveChanges();
         return Ok($"Filme Deletado: {id} - {filme.Titulo}");
     }
 }
