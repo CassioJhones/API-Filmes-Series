@@ -15,6 +15,10 @@ public class CreateFilmeDTO
     [Required(ErrorMessage = "Duracao é obrigatória")]
     [Range(90, 220, ErrorMessage = "Duracao deve ser entre 90 e 220 min")]
     public int Duracao { get; set; }
+
+    [Range(1900, 2025, ErrorMessage = "Ano entre 1990 e 2025")]
+    public int? Ano { get; set; }
+
     public string AdicionadoEm { get; set; }
 
     public CreateFilmeDTO()

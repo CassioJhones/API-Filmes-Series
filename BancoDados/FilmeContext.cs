@@ -9,5 +9,6 @@ public class FilmeContext : DbContext
         : base(config){}
 
     public DbSet<Filme> Filmes { get; set; }
+    public DbSet<Serie> Series { get; set; }
 
 }

@@ -2,7 +2,7 @@
 
 namespace FilmesAPI.Models;
 
-public class Filme
+public class Serie
 {
     [Key]
     [Required]
@@ -10,6 +10,10 @@ public class Filme
 
     [Required(ErrorMessage = "Ano é obrigatório")]
     public int Ano { get; set; }
+
+    [Required]
+    [Range(1, 90, ErrorMessage = "Deve ter entre 1 e 90 Temporadas")]
+    public int Temporadas { get; set; }
 
     [Required(ErrorMessage = "Titulo é obrigatório")]
     public string? Titulo { get; set; }
@@ -21,9 +25,9 @@ public class Filme
     [Required(ErrorMessage = "Duracao é obrigatória")]
     [Range(90, 220, ErrorMessage = "Duracao deve ser entre 90 e 220 min")]
     public int Duracao { get; set; }
-    public string? AdicionadoEm{ get; set; }
+    public string? AdicionadoEm { get; set; }
 
-    public Filme()
+    public Serie()
     {
         AdicionadoEm = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
     }
