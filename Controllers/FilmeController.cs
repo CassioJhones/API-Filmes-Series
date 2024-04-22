@@ -2,9 +2,9 @@
 using FilmesAPI.BancoDados;
 using FilmesAPI.BancoDados.DTO;
 using FilmesAPI.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 namespace FilmesAPI.Controllers;
 
 [ApiController]
@@ -68,7 +68,7 @@ public class FilmeController : ControllerBase
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
 
         ReadFilmeDTO filmeDto = _mapper.Map<ReadFilmeDTO>(filme);
-            return Ok(filme);
+        return Ok(filmeDto);
     }
 
     /// <summary>
@@ -91,25 +91,37 @@ public class FilmeController : ControllerBase
     /// Altera os dados de um filme de modo PARCIAL
     /// </summary>
     /// <param name="id">Id do Filme</param>
-    /// <param name="atParcial">Informação que deseja alterar</param>
+    /// <param name="mudanca">Informação que deseja alterar</param>
     /// <returns>IActionResult</returns>
     [HttpPatch("{id}")]//PATCH atualiza parte do obj/json
-    public IActionResult AtualizaFilmeParcial(int id, JsonPatchDocument<UpdateFilmeDTO> atParcial)
+    public IActionResult AtualizaFilmeParcial(int id, JsonPatchDocument<UpdateFilmeDTO> mudanca)
     {
+        string campo = mudanca.Operations[0].path.Replace("/", "").Trim().ToUpper();
+        object valor = mudanca.Operations[0].value;
         Filme? filme = _context.Filmes.FirstOrDefault(x => x.Id == id);
         if (filme is null) return NotFound("ID NAO ENCONTRADO");
 
+        PropertyInfo[] propriedadesObj = filme.GetType().GetProperties();
+        foreach (PropertyInfo Campo in propriedadesObj)
+        {
+            if (Campo.Name.Equals(campo, StringComparison.CurrentCultureIgnoreCase))
+            {
+                object? propValue = Campo.GetValue(filme);
+                if (propValue != null && propValue.Equals(valor))
+                    return BadRequest($"O campo {campo} já tem o valor {valor}");
+            }
+        }
+
         UpdateFilmeDTO filmeAtualizado = _mapper.Map<UpdateFilmeDTO>(filme);
 
-        atParcial.ApplyTo(filmeAtualizado,ModelState);
-
+        mudanca.ApplyTo(filmeAtualizado, ModelState);
 
         if (!TryValidateModel(filmeAtualizado))
             return ValidationProblem(ModelState);
 
         _mapper.Map(filmeAtualizado, filme);
         _context.SaveChanges();
-        return NoContent();
+        return Ok($"Alteracao Realizada do campo {campo} para {valor}");
     }
 
     /// <summary>
@@ -131,5 +143,4 @@ public class FilmeController : ControllerBase
         _context.SaveChanges();
         return Ok($"Filme Deletado: {id} - {filme.Titulo}");
     }
-
 }

@@ -22,13 +22,13 @@ public class ReadFilmeDTO
     /// </summary>
     public int Duracao { get; set; }
     /// <summary>
-    /// Define a Hora da Consulta do filme
+    /// Define a Data que foi adicionado ao Banco de Dados
+    /// </summary>
+    public string AdicionadoEm { get; set; }
+    /// <summary>
+    /// Hora que a consulta foi realizada
     /// </summary>
     public string HoraConsulta { get; set; }
-    public string AdicionadoEm { get; set; }
 
-    public ReadFilmeDTO()
-    {
-        HoraConsulta = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
-    }
+    public ReadFilmeDTO() => HoraConsulta = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
 }
