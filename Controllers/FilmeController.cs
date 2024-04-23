@@ -44,21 +44,24 @@ public class FilmeController : ControllerBase
     /// <param name="skip">Quantidade de filmes para pular</param>
     /// <param name="take">Quantidade de filmes para exibir</param>
     /// <param name="genero">Genero do filme buscado</param>
+    /// <param name="ano">Ano do filme buscado</param>
     /// <returns>Uma lista de filmes.</returns>
     /// <response code="200">Lista de filmes retornada com sucesso.</response>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IEnumerable<ReadFilmeDTO> VerificarFilmes
-        ([FromQuery] int skip = 0, [FromQuery] int take = 20, [FromQuery] string genero = null)
+        ([FromQuery] int skip = 0, [FromQuery] int take = 20, [FromQuery] string? genero = null, [FromQuery] int? ano = null)
     {
-
-        IQueryable<Filme> query = _BancoDados.Filmes;
+        IQueryable<Filme> consulta = _BancoDados.Filmes;
 
         if (!string.IsNullOrEmpty(genero))
-            query = query.Where(x => x.Genero == genero);
+            consulta = consulta.Where(x => x.Genero == genero);
 
-        query = query.Skip(skip).Take(take);
-        return _mapper.Map<List<ReadFilmeDTO>>(query.ToList());
+        if (ano != null)
+            consulta = consulta.Where(x => x.Ano == ano);
+
+        consulta = consulta.Skip(skip).Take(take);
+        return _mapper.Map<List<ReadFilmeDTO>>(consulta.ToList());
     }
 
     /// <summary>

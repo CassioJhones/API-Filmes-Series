@@ -9,7 +9,7 @@ public class ReadFilmeDTO
     /// </summary>
     public int? Id { get; set; }
     public int? Ano { get; set; }
-
+    public int? Temporadas { get; set; }
     /// <summary>
     /// Define o Titulo do filme
     /// </summary>
