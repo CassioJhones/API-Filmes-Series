@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using FilmesAPI.BancoDados;
-using FilmesAPI.BancoDados.DTO;
+using FilmesAPI.BancoDados.DTO.Filme;
 using FilmesAPI.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

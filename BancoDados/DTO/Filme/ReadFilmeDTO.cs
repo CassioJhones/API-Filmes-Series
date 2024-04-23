@@ -1,4 +1,4 @@
-﻿namespace FilmesAPI.BancoDados.DTO;
+﻿namespace FilmesAPI.BancoDados.DTO.Filme;
 /// <summary>
 /// DTO para representar os dados de um filme que serão lidos a partir do banco de dados.
 /// </summary>

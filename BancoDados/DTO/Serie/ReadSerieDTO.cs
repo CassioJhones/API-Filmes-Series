@@ -1,4 +1,4 @@
-﻿namespace FilmesAPI.BancoDados.DTO;
+﻿namespace FilmesAPI.BancoDados.DTO.Serie;
 
 public class ReadSerieDTO
 {

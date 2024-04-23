@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FilmesAPI.BancoDados.DTO;
+namespace FilmesAPI.BancoDados.DTO.Serie;
 
 public class CreateSerieDTO
 {
@@ -20,7 +20,7 @@ public class CreateSerieDTO
     public int Temporadas { get; set; }
 
     [Required(ErrorMessage = "Ano é obrigatório")]
-    public int Ano { get; set; } 
+    public int Ano { get; set; }
 
     public string AdicionadoEm { get; set; }
 
